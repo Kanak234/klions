@@ -1,0 +1,18 @@
+[package]
+name = "klions-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "klions"
+path = "src/main.rs"
+
+[dependencies]
+klions-diagnostics = { path = "../klions-diagnostics" }
+klions-frontend = { path = "../klions-frontend" }
+klions-runtime = { path = "../klions-runtime" }
+klions-platform = { path = "../klions-platform" }
+klions-tensor = { path = "../klions-tensor" }
+klions-lexer = { path = "../klions-lexer" }

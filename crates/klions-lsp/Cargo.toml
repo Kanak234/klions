@@ -1,0 +1,17 @@
+[package]
+name = "klions-lsp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "klions-lsp"
+path = "src/main.rs"
+
+[dependencies]
+klions-diagnostics = { path = "../klions-diagnostics" }
+klions-frontend = { path = "../klions-frontend" }
+klions-types = { path = "../klions-types" }
+klions-ast = { path = "../klions-ast" }
+klions-lexer = { path = "../klions-lexer" }

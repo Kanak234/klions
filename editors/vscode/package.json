@@ -1,0 +1,44 @@
+{
+  "name": "klions",
+  "displayName": "KLIONS",
+  "description": "Language support for KLIONS — syntax highlighting and the KLIONS language server.",
+  "version": "0.1.0",
+  "publisher": "klions",
+  "license": "Apache-2.0",
+  "engines": { "vscode": "^1.75.0" },
+  "categories": ["Programming Languages"],
+  "activationEvents": ["onLanguage:klions"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [{
+      "id": "klions",
+      "aliases": ["KLIONS", "klions"],
+      "extensions": [".kl"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "klions",
+      "scopeName": "source.klions",
+      "path": "./syntaxes/klions.tmLanguage.json"
+    }],
+    "snippets": [{ "language": "klions", "path": "./snippets/klions.json" }],
+    "configuration": {
+      "title": "KLIONS",
+      "properties": {
+        "klions.server.path": {
+          "type": "string",
+          "default": "klions-lsp",
+          "description": "Path to the klions-lsp executable."
+        },
+        "klions.server.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run the KLIONS language server for diagnostics, hover, and completion."
+        }
+      }
+    }
+  },
+  "scripts": { "compile": "tsc -p ./", "watch": "tsc -watch -p ./" },
+  "devDependencies": { "@types/vscode": "^1.75.0", "typescript": "^5.0.0" },
+  "dependencies": { "vscode-languageclient": "^9.0.1" }
+}

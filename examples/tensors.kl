@@ -1,0 +1,42 @@
+// Tensor operations — shapes, broadcasting, matrix multiplication, reductions.
+
+fn main() {
+    // Construction
+    let a = tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    println("a = {}", a)
+    println("shape {}  rank {}  elements {}", a.shape(), a.rank(), a.numel())
+    println("")
+
+    // Element-wise arithmetic, with broadcasting
+    let row = tensor([10.0, 20.0, 30.0])
+    println("a + row (broadcast over 2 rows):")
+    println("{}", a + row)
+    println("")
+
+    // Matrix multiplication. `@` binds tighter than `*`.
+    let b = a.t()
+    println("a @ a.t() = {}", a @ b)
+    println("")
+
+    // Reductions, whole-tensor and per-axis
+    println("sum        {}", a.sum())
+    println("mean       {}", a.mean())
+    println("max        {}", a.max())
+    println("sum axis 0 {}", a.sum(0))
+    println("sum axis 1 {}", a.sum(1))
+    println("argmax     {}", a.argmax())
+    println("")
+
+    // Reshaping. One dimension may be -1 and is inferred.
+    println("reshaped to 3x2: {}", a.reshape(3, -1).shape())
+    println("flattened:       {}", a.flatten().shape())
+    println("")
+
+    // Element-wise maths
+    let x = tensor([-2.0, -0.5, 0.0, 0.5, 2.0])
+    println("x        {}", x)
+    println("relu     {}", x.relu())
+    println("sigmoid  {}", x.sigmoid())
+    println("tanh     {}", x.tanh())
+    println("abs      {}", x.abs())
+}

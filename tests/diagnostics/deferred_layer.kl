@@ -1,0 +1,2 @@
+model N { a = Conv2D(filters=8) }
+fn main() { }

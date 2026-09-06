@@ -1,0 +1,11 @@
+[package]
+name = "klions-nn"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+klions-tensor = { path = "../klions-tensor" }
+klions-autodiff = { path = "../klions-autodiff" }
+klions-diagnostics = { path = "../klions-diagnostics" }

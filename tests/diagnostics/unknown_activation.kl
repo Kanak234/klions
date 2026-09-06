@@ -1,0 +1,2 @@
+model N { a = Dense(inputs=1, outputs=1, activation="reeelu") }
+fn main() { }

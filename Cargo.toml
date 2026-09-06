@@ -1,0 +1,34 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/klions-diagnostics",
+    "crates/klions-lexer",
+    "crates/klions-ast",
+    "crates/klions-parser",
+    "crates/klions-types",
+    "crates/klions-frontend",
+    "crates/klions-tensor",
+    "crates/klions-autodiff",
+    "crates/klions-nn",
+    "crates/klions-runtime",
+    "crates/klions-platform",
+    "crates/klions-cli",
+    "crates/klions-lsp",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0 WITH LLVM-exception"
+authors = ["Kanak Prabhakar <language architect>"]
+repository = "https://github.com/Kanak234/klions"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "unwind"
+debug = false
+
+[profile.dev]
+opt-level = 1

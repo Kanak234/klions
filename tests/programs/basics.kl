@@ -1,0 +1,13 @@
+fn double(n: i64) -> i64 { return n * 2 }
+
+fn main() {
+    println("{}", double(21))
+    let mut total = 0
+    for i in 1..5 { total = total + i }
+    println("{}", total)
+    let t = tensor([[1.0, 2.0], [3.0, 4.0]])
+    println("{}", t.sum())
+    println("{}", (t @ t).sum())
+    println("{}", t.t().to_vec())
+    if total > 5 && total < 20 { println("in range") }
+}

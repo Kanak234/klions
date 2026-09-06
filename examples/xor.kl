@@ -1,0 +1,30 @@
+// XOR — the smallest problem a linear model cannot solve.
+// A single hidden layer is enough, which makes this the classic first test
+// that backpropagation is actually working.
+
+model XorNet {
+    hidden = Dense(inputs=2, outputs=8, activation="tanh")
+    output = Dense(inputs=8, outputs=1, activation="sigmoid")
+}
+
+fn main() {
+    let data = Dataset::from_csv("data/xor.csv", 2).unwrap()
+
+    println("{}", XorNet.summary())
+
+    train XorNet using data {
+        epochs = 400,
+        batch_size = 4,
+        optimizer = Adam(0.05),
+        loss = "mse",
+        verbose = false
+    }
+
+    println("after training:")
+    for i in 0..4 {
+        let x = data.sample(i)
+        let y = XorNet.predict(x)
+        println("  {} XOR {} -> {:.3}  (expected {})",
+                x[0, 0], x[0, 1], y[0, 0], data.label(i))
+    }
+}

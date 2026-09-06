@@ -1,0 +1,49 @@
+// Handwritten-digit classification — the reference program from the SRS.
+//
+// The dataset here is synthetic (see tools/make_dataset.py) so the example
+// runs without a network. Point it at the real MNIST IDX files and nothing
+// else changes: tools/fetch_mnist.sh downloads them.
+
+import klions::ai::nn
+import klions::ai::data
+
+model DigitNet {
+    hidden = Dense(inputs=784, outputs=128, activation="relu")
+    drop   = Dropout(p=0.2)
+    output = Dense(inputs=128, outputs=10)
+}
+
+fn main() {
+    let train_data = Dataset::from_idx("data/train-images.idx", "data/train-labels.idx")
+        .unwrap()
+        .normalize()
+
+    let test = Dataset::from_idx("data/test-images.idx", "data/test-labels.idx")
+        .unwrap()
+        .normalize()
+
+    println("{}", DigitNet.summary())
+    println("train: {} samples, test: {} samples", train_data.len(), test.len())
+    println("")
+
+    train DigitNet using train_data {
+        epochs = 12,
+        batch_size = 64,
+        optimizer = Adam(0.001),
+        loss = "cross_entropy",
+        metrics = ["accuracy"]
+    }
+
+    println("")
+    let result = DigitNet.evaluate(test)
+    println("held-out accuracy: {:.4} over {} samples", result.accuracy, result.samples)
+
+    // Show a handful of individual predictions.
+    println("")
+    println("sample predictions:")
+    for i in 0..5 {
+        let x = test.sample(i)
+        let logits = DigitNet.predict(x)
+        println("  expected {}  predicted {}", test.label(i), argmax(logits))
+    }
+}

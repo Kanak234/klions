@@ -1,0 +1,4 @@
+fn main() {
+    let t = zeros(2, 2)
+    let _x = t.item(1, 2, 3)
+}

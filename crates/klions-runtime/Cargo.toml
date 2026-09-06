@@ -1,0 +1,16 @@
+[package]
+name = "klions-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+klions-diagnostics = { path = "../klions-diagnostics" }
+klions-ast = { path = "../klions-ast" }
+klions-frontend = { path = "../klions-frontend" }
+klions-types = { path = "../klions-types" }
+klions-tensor = { path = "../klions-tensor" }
+klions-autodiff = { path = "../klions-autodiff" }
+klions-nn = { path = "../klions-nn" }
+klions-platform = { path = "../klions-platform" }

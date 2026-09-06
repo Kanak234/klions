@@ -1,0 +1,5 @@
+fn main() {
+    let a: tensor<f32, 4, 3> = zeros(4, 3)
+    let b: tensor<f32, 5, 2> = zeros(5, 2)
+    let _c = a @ b
+}

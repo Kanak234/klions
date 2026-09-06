@@ -1,0 +1,121 @@
+(* KLIONS v0.1.0 "Ember" — concrete grammar in ISO/IEC 14977 EBNF.
+   This is the normative syntax. The parser in crates/klions-parser
+   implements it directly by recursive descent, with Pratt precedence
+   climbing for Expression. *)
+
+Program        = { Import } , { Item } ;
+
+Import         = "import" , Ident , { "::" , Ident } , Terminator ;
+
+Item           = Function | Model | Const ;
+
+Function       = "fn" , Ident , "(" , [ ParamList ] , ")" ,
+                 [ "->" , Type ] , Block ;
+ParamList      = Param , { "," , Param } , [ "," ] ;
+Param          = Ident , ":" , Type ;
+
+Model          = "model" , Ident , "{" , { LayerBinding } , "}" ;
+LayerBinding   = Ident , "=" , LayerExpr , Terminator ;
+LayerExpr      = Ident , "(" , [ ArgList ] , ")" ;
+
+Const          = "const" , Ident , ":" , Type , "=" , Expression , Terminator ;
+
+(* ---- types ---- *)
+
+Type           = PrimitiveType
+               | TensorType
+               | ResultType
+               | FunctionType
+               | Ident ;
+
+PrimitiveType  = "i32" | "i64" | "f32" | "f64" | "bool" | "string" | "void" | "auto" ;
+TensorType     = "tensor" , "<" , Ident , { "," , Dimension } , ">" ;
+Dimension      = IntLiteral | "_" ;
+ResultType     = "Result" , "<" , Type , "," , Type , ">" ;
+FunctionType   = "fn" , "(" , [ Type , { "," , Type } ] , ")" , "->" , Type ;
+
+(* ---- statements ---- *)
+
+Block          = "{" , { Statement } , "}" ;
+
+Statement      = LetStatement
+               | Assignment
+               | TrainStatement
+               | IfStatement
+               | WhileStatement
+               | ForStatement
+               | ReturnStatement
+               | "break" , Terminator
+               | "continue" , Terminator
+               | NoGradStatement
+               | Block
+               | Expression , Terminator ;
+
+LetStatement   = "let" , [ "mut" ] , ( Ident | "_" ) ,
+                 [ ":" , Type ] , "=" , Expression , Terminator ;
+
+Assignment     = LValue , AssignOp , Expression , Terminator ;
+AssignOp       = "=" | "+=" | "-=" | "*=" | "/=" ;
+LValue         = Ident , { "." , Ident | "[" , ExprList , "]" } ;
+
+TrainStatement = "train" , Ident , "using" , Ident ,
+                 [ "{" , [ TrainOption , { "," , TrainOption } ] , "}" ] ,
+                 Terminator ;
+TrainOption    = Ident , "=" , Expression ;
+
+IfStatement    = "if" , Expression , Block , [ "else" , ( IfStatement | Block ) ] ;
+WhileStatement = "while" , Expression , Block ;
+ForStatement   = "for" , Ident , "in" , IterExpr , Block ;
+IterExpr       = Expression , [ ".." , Expression ] ;
+ReturnStatement= "return" , [ Expression ] , Terminator ;
+NoGradStatement= "no_grad" , Block ;
+
+(* A statement ends at a semicolon, or at a newline where the previous token
+   can end a statement and the next cannot continue an expression. See
+   FR-LEX-009; the lexer inserts a virtual terminator in that case. *)
+Terminator     = ";" | VirtualNewline | ? end of block ? | ? end of file ? ;
+
+(* ---- expressions, lowest precedence first ---- *)
+
+Expression     = LogicalOr ;
+LogicalOr      = LogicalAnd , { "||" , LogicalAnd } ;
+LogicalAnd     = Equality , { "&&" , Equality } ;
+Equality       = Comparison , { ( "==" | "!=" ) , Comparison } ;
+Comparison     = Additive , { ( "<" | "<=" | ">" | ">=" ) , Additive } ;
+Additive       = Multiplicative , { ( "+" | "-" ) , Multiplicative } ;
+Multiplicative = MatMul , { ( "*" | "/" | "%" ) , MatMul } ;
+MatMul         = Unary , { "@" , Unary } ;
+Unary          = [ "-" | "!" ] , Postfix , { "as" , Type } ;
+Postfix        = Primary , { "." , Ident
+                           | "(" , [ ArgList ] , ")"
+                           | "[" , ExprList , "]"
+                           | "?" } ;
+
+Primary        = IntLiteral | FloatLiteral | StringLiteral
+               | "true" | "false" | "null"
+               | Ident | "_"
+               | Ident , "::" , Ident
+               | "Ok" , "(" , [ Expression ] , ")"
+               | "Err" , "(" , Expression , ")"
+               | "[" , [ ExprList ] , "]"
+               | "(" , Expression , ")" ;
+
+ArgList        = Arg , { "," , Arg } , [ "," ] ;
+Arg            = [ Ident , "=" ] , Expression ;   (* positional args precede named *)
+ExprList       = Expression , { "," , Expression } ;
+
+(* ---- lexical ---- *)
+
+Ident          = ( Letter | "_" ) , { Letter | Digit | "_" } ;
+IntLiteral     = DecInt | HexInt | BinInt ;
+DecInt         = Digit , { Digit | "_" } ;
+HexInt         = "0" , ( "x" | "X" ) , HexDigit , { HexDigit | "_" } ;
+BinInt         = "0" , ( "b" | "B" ) , BinDigit , { BinDigit | "_" } ;
+FloatLiteral   = DecInt , [ "." , DecInt ] , [ ( "e" | "E" ) , [ "+" | "-" ] , DecInt ] ;
+StringLiteral  = '"' , { Character | Escape } , '"' ;
+Escape         = "\" , ( "n" | "t" | "r" | "0" | "\" | '"' | "u" , "{" , HexDigit , { HexDigit } , "}" ) ;
+
+Letter         = "A" .. "Z" | "a" .. "z" ;
+Digit          = "0" .. "9" ;
+HexDigit       = Digit | "a" .. "f" | "A" .. "F" ;
+BinDigit       = "0" | "1" ;

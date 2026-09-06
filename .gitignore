@@ -1,0 +1,20 @@
+/target
+**/*.rs.bk
+Cargo.lock
+editors/vscode/node_modules
+editors/vscode/out
+*.klm
+
+# extra safety
+.env
+.env.*
+!*.env.example
+*.pem
+*.key
+credentials*
+venv/
+.venv/
+node_modules/
+*.gguf
+*.pt
+*.safetensors

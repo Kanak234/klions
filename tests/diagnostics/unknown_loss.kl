@@ -1,0 +1,5 @@
+model N { a = Dense(inputs=1, outputs=1) }
+fn main() {
+    let d = Dataset::from_csv("x.csv", 0).unwrap()
+    train N using d { epochs = 1, loss = "crossentropy" }
+}
