@@ -1,0 +1,13 @@
+[package]
+name = "klions-frontend"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+klions-diagnostics = { path = "../klions-diagnostics" }
+klions-lexer = { path = "../klions-lexer" }
+klions-ast = { path = "../klions-ast" }
+klions-parser = { path = "../klions-parser" }
+klions-types = { path = "../klions-types" }

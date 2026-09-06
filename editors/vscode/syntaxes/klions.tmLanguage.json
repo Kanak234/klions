@@ -1,0 +1,81 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "KLIONS",
+  "scopeName": "source.klions",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#ai-keywords" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#layers" },
+    { "include": "#numbers" },
+    { "include": "#operators" },
+    { "include": "#functions" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.klions", "match": "//.*$" },
+        { "name": "comment.block.klions", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.klions",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.klions", "match": "\\\\(n|t|r|0|\\\\|\"|u\\{[0-9A-Fa-f]+\\})" },
+        { "name": "constant.other.placeholder.klions", "match": "\\{[^}]*\\}" }
+      ]
+    },
+    "ai-keywords": {
+      "comment": "FR-EXT-002: AI constructs get their own scope so themes can colour them distinctly from ordinary control flow.",
+      "name": "keyword.ai.klions",
+      "match": "\\b(model|train|using|no_grad|tensor)\\b"
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.klions", "match": "\\b(if|else|while|for|in|return|break|continue)\\b" },
+        { "name": "keyword.declaration.klions", "match": "\\b(fn|let|mut|const|import)\\b" },
+        { "name": "keyword.operator.cast.klions", "match": "\\bas\\b" },
+        { "name": "constant.language.klions", "match": "\\b(true|false|null)\\b" },
+        { "name": "invalid.deprecated.reserved.klions", "match": "\\b(struct|enum|trait|impl|match|pub|async|await|unsafe|device|spawn)\\b" }
+      ]
+    },
+    "types": {
+      "patterns": [
+        { "name": "storage.type.primitive.klions", "match": "\\b(i32|i64|f32|f64|bool|string|void|auto)\\b" },
+        { "name": "storage.type.klions", "match": "\\b(Model|Dataset|Optimizer|Layer|Metrics|Result|Ok|Err)\\b" }
+      ]
+    },
+    "layers": {
+      "patterns": [
+        { "name": "support.class.layer.klions", "match": "\\b(Dense|ReLU|Sigmoid|Tanh|Softmax|Flatten|Dropout)\\b" },
+        { "name": "support.class.deferred.klions", "match": "\\b(Conv2D|Conv1D|MaxPool|MaxPool2D|AvgPool|BatchNorm|LayerNorm|LSTM|GRU|RNN|TransformerBlock|Attention|Embedding)\\b" },
+        { "name": "support.function.optimizer.klions", "match": "\\b(Adam|SGD|RMSProp)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.hex.klions", "match": "\\b0[xX][0-9a-fA-F_]+\\b" },
+        { "name": "constant.numeric.binary.klions", "match": "\\b0[bB][01_]+\\b" },
+        { "name": "constant.numeric.float.klions", "match": "\\b[0-9][0-9_]*\\.[0-9_]+([eE][+-]?[0-9]+)?\\b" },
+        { "name": "constant.numeric.integer.klions", "match": "\\b[0-9][0-9_]*([eE][+-]?[0-9]+)?\\b" }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.matmul.klions", "match": "@" },
+        { "name": "keyword.operator.klions", "match": "(\\+=|-=|\\*=|/=|==|!=|<=|>=|&&|\\|\\||->|\\?|[+\\-*/%<>=!])" }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        { "name": "entity.name.function.klions", "match": "(?<=\\bfn\\s)[A-Za-z_][A-Za-z0-9_]*" },
+        { "name": "entity.name.class.klions", "match": "(?<=\\bmodel\\s)[A-Za-z_][A-Za-z0-9_]*" },
+        { "name": "support.function.builtin.klions", "match": "\\b(print|println|format|assert|len|shape|rank|zeros|ones|full|eye|arange|rand|randn|one_hot|argmax|argmin|sum|mean|max|min|abs|sqrt|exp|ln|pow|floor|ceil|round|time_ms)\\b(?=\\s*\\()" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+model N {
+    a = Dense(inputs=4, outputs=8)
+    b = Dense(inputs=6, outputs=2)
+}
+fn main() { }

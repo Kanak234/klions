@@ -1,0 +1,5 @@
+model N {
+    a = Dense(inputs=1, outputs=1)
+    d = Dropout(p=1.5)
+}
+fn main() { }

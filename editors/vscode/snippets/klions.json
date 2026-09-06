@@ -1,0 +1,50 @@
+{
+  "Main function": {
+    "prefix": "main",
+    "body": ["fn main() {", "\t$0", "}"],
+    "description": "The program entry point"
+  },
+  "Model declaration": {
+    "prefix": "model",
+    "body": [
+      "model ${1:Net} {",
+      "\thidden = Dense(inputs=${2:784}, outputs=${3:128}, activation=\"relu\")",
+      "\toutput = Dense(inputs=${3:128}, outputs=${4:10})",
+      "}"
+    ],
+    "description": "A dense feed-forward model"
+  },
+  "Training block": {
+    "prefix": "train",
+    "body": [
+      "train ${1:Net} using ${2:data} {",
+      "\tepochs = ${3:10},",
+      "\tbatch_size = ${4:32},",
+      "\toptimizer = Adam(${5:0.001}),",
+      "\tloss = \"${6:cross_entropy}\",",
+      "\tmetrics = [\"accuracy\"]",
+      "}"
+    ],
+    "description": "A training loop"
+  },
+  "Dense layer": {
+    "prefix": "dense",
+    "body": ["${1:name} = Dense(inputs=${2:128}, outputs=${3:10}, activation=\"${4:relu}\")"],
+    "description": "A fully connected layer"
+  },
+  "Load an IDX dataset": {
+    "prefix": "idx",
+    "body": ["let ${1:data} = Dataset::from_idx(\"${2:images.idx}\", \"${3:labels.idx}\").unwrap()"],
+    "description": "Load a dataset in IDX format"
+  },
+  "Load a CSV dataset": {
+    "prefix": "csv",
+    "body": ["let ${1:data} = Dataset::from_csv(\"${2:data.csv}\", ${3:0}).unwrap()"],
+    "description": "Load a dataset from CSV"
+  },
+  "no_grad block": {
+    "prefix": "nograd",
+    "body": ["no_grad {", "\t$0", "}"],
+    "description": "Suspend gradient tracking"
+  }
+}

@@ -1,0 +1,8 @@
+// The smallest complete KLIONS program.
+fn main() {
+    println("Hello, KLIONS!")
+
+    let name = "world"
+    let answer = 6 * 7
+    println("{} says the answer is {}", name, answer)
+}

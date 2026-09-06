@@ -1,0 +1,17 @@
+# KLIONS project manifest.
+#
+# Its presence marks the project root. Dataset paths may not escape it,
+# which is what stops `../../etc/passwd` from being a valid dataset path.
+
+[project]
+name = "klions-examples"
+version = "0.1.0"
+
+[build]
+# Default seed for the global generator. `--seed` overrides it.
+seed = 42
+
+[limits]
+# Tensor allocations above this are refused before they are attempted.
+# Omit to use 75% of available system memory.
+# memory_ceiling = "2GiB"
