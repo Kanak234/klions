@@ -1,10 +1,41 @@
 name: CI
-on: [push, pull_request]
+
+# This workflow validates the existing KLIONS workspace without modifying source code.
+# It covers formatting, compilation, and the repository's documented test contract.
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# CI only needs to read repository contents; no write permission is required.
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build --workspace --all-features
-      - run: cargo test --workspace
+      # Use the repository source exactly as committed for reproducible validation.
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install stable Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      # Formatting is checked without rewriting files, so CI cannot silently change
+      # a contributor's source tree.
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      # Validate every workspace member and target using the workspace declaration
+      # in Cargo.toml rather than maintaining a second list of packages.
+      - name: Check workspace
+        run: cargo check --workspace --all-targets --all-features
+
+      # Run the complete workspace test suite that the project documents as its
+      # release-quality validation step.
+      - name: Run workspace tests
+        run: cargo test --workspace --all-features
