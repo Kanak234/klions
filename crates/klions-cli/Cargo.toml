@@ -3,6 +3,11 @@ name = "klions-cli"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "The klions command-line compiler for KLIONS, an AI-first systems language where tensor shapes are part of the type"
+repository = "https://github.com/Kanak234/klions"
+readme = "../../README.md"
+keywords = ["klions", "compiler", "tensor", "machine-learning", "language"]
+categories = ["compilers"]
 authors.workspace = true
 
 [[bin]]

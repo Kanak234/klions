@@ -3,6 +3,11 @@ name = "klions-lsp"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Language server for KLIONS"
+repository = "https://github.com/Kanak234/klions"
+readme = "../../README.md"
+keywords = ["klions", "compiler", "tensor", "machine-learning", "language"]
+categories = ["compilers"]
 authors.workspace = true
 
 [[bin]]
