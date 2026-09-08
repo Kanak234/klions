@@ -1,6 +1,9 @@
 /target
 **/*.rs.bk
-Cargo.lock
+# Cargo.lock is committed on purpose: this workspace ships the `klions`
+# and `klions-lsp` binaries, and releases build with --locked so the
+# published artifacts are reproducible. (Ignoring it is the right default
+# for a library-only workspace, which this is not.)
 editors/vscode/node_modules
 editors/vscode/out
 *.klm

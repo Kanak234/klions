@@ -10,16 +10,95 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  # A language nobody can install is a language nobody tries. This job builds
+  # the two binaries for every platform we claim to support and attaches them
+  # to the release, so `klions run hello.kl` is a download away rather than a
+  # Rust toolchain and a from-source build away.
+  binaries:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu,  ext: ""     }
+          - { os: ubuntu-latest,  target: aarch64-unknown-linux-gnu, ext: ""     }
+          - { os: macos-latest,   target: x86_64-apple-darwin,       ext: ""     }
+          - { os: macos-latest,   target: aarch64-apple-darwin,      ext: ""     }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc,    ext: ".exe" }
     steps:
       - uses: actions/checkout@v4
-      - name: Package Release Archive
+
+      - name: Install the Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # The aarch64 Linux target needs a cross linker; the others build natively.
+      - name: Install the aarch64 cross linker
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
-          tar -czf release-bundle.tar.gz --exclude='.git' .
-      - name: Create GitHub Release
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> "$GITHUB_ENV"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build klions and klions-lsp
+        run: cargo build --release --locked --target ${{ matrix.target }} -p klions-cli -p klions-lsp
+
+      # Smoke-test what we are about to ship, but only where it can run --
+      # the cross-compiled aarch64 Linux binary cannot execute on this runner.
+      - name: Run a program with the binary we just built
+        if: matrix.target != 'aarch64-unknown-linux-gnu'
+        shell: bash
+        run: |
+          BIN="target/${{ matrix.target }}/release/klions${{ matrix.ext }}"
+          "$BIN" version
+          "$BIN" run examples/hello.kl
+
+      - name: Assemble the archive
+        shell: bash
+        run: |
+          STAGE="klions-${{ github.ref_name }}-${{ matrix.target }}"
+          mkdir -p "$STAGE"
+          cp "target/${{ matrix.target }}/release/klions${{ matrix.ext }}" "$STAGE/"
+          cp "target/${{ matrix.target }}/release/klions-lsp${{ matrix.ext }}" "$STAGE/"
+          cp README.md LICENSE "$STAGE/" 2>/dev/null || true
+          cp -r examples "$STAGE/" 2>/dev/null || true
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            7z a "$STAGE.zip" "$STAGE"
+          else
+            tar -czf "$STAGE.tar.gz" "$STAGE"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: klions-${{ matrix.target }}
+          path: |
+            klions-*.tar.gz
+            klions-*.zip
+          if-no-files-found: error
+
+  release:
+    needs: binaries
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Also keep a source archive
+        run: tar -czf "dist/klions-${{ github.ref_name }}-source.tar.gz" --exclude='.git' --exclude='target' --exclude='dist' .
+
+      - name: Publish the release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           generate_release_notes: true
-          files: release-bundle.tar.gz
+          files: dist/*
