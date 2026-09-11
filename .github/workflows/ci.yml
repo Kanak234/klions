@@ -1,11 +1,9 @@
 name: CI
 
-# This workflow validates the existing KLIONS workspace without modifying source code.
-# Compilation and tests are the release-safety gates; formatting is intentionally
-# not a blocking gate because the current tree has pre-existing rustfmt drift.
+# This workflow validates the KLIONS workspace across compilation, tests, healthcheck, and containerization.
 on:
   push:
-    branches: [master]
+    branches: [master, prod-hardening]
   pull_request:
     branches: [master]
 
@@ -14,25 +12,24 @@ permissions:
 
 jobs:
   build:
+    name: Build, Test & Healthcheck
     runs-on: ubuntu-latest
     steps:
-      # Use the repository source exactly as committed for reproducible validation.
       - name: Check out source
         uses: actions/checkout@v4
 
       - name: Install stable Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Validate every workspace member and target using the workspace declaration.
       - name: Check workspace
         run: cargo check --workspace --all-targets --all-features
 
-      # Run the complete workspace test suite documented by the project.
       - name: Run workspace tests
         run: cargo test --workspace --all-features
 
-      # Keep formatting visible without making a historical formatting-only issue
-      # block otherwise valid builds and tests.
+      - name: Verify compiler self-diagnostic health check
+        run: cargo run -p klions-cli -- health
+
       - name: Report formatting status
         shell: bash
         run: |
@@ -41,3 +38,18 @@ jobs:
           else
             echo "::warning::cargo fmt reports formatting differences in the existing tree."
           fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build container image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: klions:test
+
+      - name: Run container health check and version smoke test
+        run: |
+          docker run --rm klions:test health
+          docker run --rm klions:test version

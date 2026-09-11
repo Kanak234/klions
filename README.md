@@ -1,10 +1,15 @@
 # KLIONS
 
+[![CI](https://github.com/Kanak234/klions/actions/workflows/ci.yml/badge.svg)](https://github.com/Kanak234/klions/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Kanak234/klions/actions/workflows/codeql.yml/badge.svg)](https://github.com/Kanak234/klions/actions/workflows/codeql.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0_WITH_LLVM--exception-blue.svg)](LICENSE)
+
 **An AI-first systems programming language where tensor shapes are part of the type.**
 
 Version 0.1.0 "Ember" · Apache-2.0 WITH LLVM-exception
 
 ---
+
 
 ## The problem
 
