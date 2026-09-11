@@ -40,6 +40,7 @@ enum Command {
     Version,
     Help,
     Explain,
+    Health,
 }
 
 fn main() -> ExitCode {
@@ -63,6 +64,7 @@ fn main() -> ExitCode {
             print_help();
             ExitCode::SUCCESS
         }
+        Command::Health => health_check(),
         Command::Explain => {
             let code = opts.files.first().map(|p| p.to_string_lossy().to_string());
             explain(code.as_deref())
@@ -110,6 +112,7 @@ fn parse_args(args: &[String]) -> Result<Options, String> {
             i = 1;
             Command::Explain
         }
+        "health" => return Ok(Options { command: Command::Health, ..o }),
         "version" | "--version" | "-V" => return Ok(Options { command: Command::Version, ..o }),
         "help" | "--help" | "-h" => return Ok(Options { command: Command::Help, ..o }),
         other if other.starts_with('-') => {
@@ -426,6 +429,7 @@ COMMANDS
     fmt <files...>      format source in place (--check to verify only)
     repl                start an interactive session
     explain <code>      describe a diagnostic code, e.g. K1001
+    health              run compiler self-diagnostic health check
     version             print the version
     help                print this message
 
@@ -448,6 +452,19 @@ EXAMPLES
     klions run examples/mnist.kl --seed 7 --time
     klions check src/*.kl --json
     klions explain K1001
+    klions health
 "#
     );
 }
+
+fn health_check() -> ExitCode {
+    let source = "fn main() { println(\"healthy\") }";
+    let analysis = klions_frontend::analyze(source);
+    if analysis.diagnostics.iter().any(|d| d.severity == Severity::Error) {
+        eprintln!("klions: health check failed: frontend analysis failed");
+        return ExitCode::from(1);
+    }
+    println!("{{\"status\":\"healthy\",\"engine\":\"klions\",\"version\":\"{}\"}}", VERSION);
+    ExitCode::SUCCESS
+}
+

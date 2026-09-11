@@ -5,23 +5,43 @@
   "version": "0.1.0",
   "publisher": "klions",
   "license": "Apache-2.0",
-  "engines": { "vscode": "^1.75.0" },
-  "categories": ["Programming Languages"],
-  "activationEvents": ["onLanguage:klions"],
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:klions"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "languages": [{
-      "id": "klions",
-      "aliases": ["KLIONS", "klions"],
-      "extensions": [".kl"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "klions",
-      "scopeName": "source.klions",
-      "path": "./syntaxes/klions.tmLanguage.json"
-    }],
-    "snippets": [{ "language": "klions", "path": "./snippets/klions.json" }],
+    "languages": [
+      {
+        "id": "klions",
+        "aliases": [
+          "KLIONS",
+          "klions"
+        ],
+        "extensions": [
+          ".kl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "klions",
+        "scopeName": "source.klions",
+        "path": "./syntaxes/klions.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "klions",
+        "path": "./snippets/klions.json"
+      }
+    ],
     "configuration": {
       "title": "KLIONS",
       "properties": {
@@ -38,7 +58,17 @@
       }
     }
   },
-  "scripts": { "compile": "tsc -p ./", "watch": "tsc -watch -p ./" },
-  "devDependencies": { "@types/vscode": "^1.75.0", "typescript": "^5.0.0" },
-  "dependencies": { "vscode-languageclient": "^9.0.1" }
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
 }

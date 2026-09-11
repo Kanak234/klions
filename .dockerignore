@@ -1,0 +1,11 @@
+target
+.git
+.github
+.claude
+editors/vscode/node_modules
+editors/vscode/out
+editors/vscode/*.vsix
+*.klm
+*.tar.gz
+*.zip
+dist

@@ -21,3 +21,5 @@ node_modules/
 *.gguf
 *.pt
 *.safetensors
+*.vsix
+.claude/
